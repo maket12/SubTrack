@@ -22,11 +22,9 @@ assignment.
 
 ## 🛠️ Tech Stack
 
--   **Go** (Gin, sqlx, uuid, slog)\
--   **PostgreSQL**\
--   **golang-migrate** (database migrations)\
--   **Viper** (configuration management)\
--   **Swaggo** (Swagger documentation)\
+-   **Go** (Gin, sqlx, uuid, slog)
+-   **PostgreSQL**
+-   **Swaggo** (Swagger documentation)
 -   **Docker / Docker Compose**
 
 ## 📁 Project Structure
