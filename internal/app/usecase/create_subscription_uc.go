@@ -64,7 +64,7 @@ func (uc *CreateSubscriptionUC) Execute(ctx context.Context, in dto.CreateSubscr
 	}
 
 	if err := uc.Subscriptions.Create(ctx, sub); err != nil {
-		return dto.CreateSubscriptionResponse{}, uc_errors.ErrCreateSubscription
+		return dto.CreateSubscriptionResponse{}, uc_errors.Wrap(uc_errors.ErrCreateSubscription, err)
 	}
 
 	return dto.CreateSubscriptionResponse{ID: sub.ID}, nil

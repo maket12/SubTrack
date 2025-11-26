@@ -18,42 +18,43 @@ type GetTotalSumUC struct {
 
 func (uc *GetTotalSumUC) Execute(ctx context.Context, in dto.GetTotalSum) (dto.GetTotalSumResponse, error) {
 	/* ####################
-	   #	Validation    #
-	   ####################
-	*/
-	if in.UserID == "" {
-		return dto.GetTotalSumResponse{}, uc_errors.ErrEmptyUserID
-	}
-	if in.StartDate == "" {
-		return dto.GetTotalSumResponse{}, uc_errors.ErrEmptyDate
-	}
-
-	/* ####################
 	   #	 Parsing      #
 	   ####################
 	*/
-	uid, err := uuid.Parse(in.UserID)
-	if err != nil {
-		return dto.GetTotalSumResponse{}, uc_errors.ErrInvalidUserID
+	var uidPtr *uuid.UUID
+	if in.UserID != "" {
+		uid, err := uuid.Parse(in.UserID)
+		if err != nil {
+			return dto.GetTotalSumResponse{}, uc_errors.ErrInvalidUserID
+		}
+		if uid == uuid.Nil {
+			return dto.GetTotalSumResponse{}, uc_errors.ErrInvalidUserID
+		}
+		uidPtr = &uid
 	}
 
-	var sName string
-	if in.ServiceName != nil {
-		sName = *in.ServiceName
+	var serviceNamePtr *string
+	if in.ServiceName != nil && *in.ServiceName != "" {
+		s := *in.ServiceName
+		serviceNamePtr = &s
 	}
 
-	start, err := time.Parse("02-01-2006", in.StartDate)
-	if err != nil {
-		return dto.GetTotalSumResponse{}, uc_errors.ErrInvalidDate
+	var startPtr *time.Time
+	if in.StartDate != "" {
+		start, err := time.Parse("02-01-2006", in.StartDate)
+		if err != nil {
+			return dto.GetTotalSumResponse{}, uc_errors.ErrInvalidDate
+		}
+		startPtr = &start
 	}
 
-	var end *time.Time
-	if in.EndDate != nil {
+	var endPtr *time.Time
+	if in.EndDate != nil && *in.EndDate != "" {
 		t, err := time.Parse("02-01-2006", *in.EndDate)
 		if err != nil {
 			return dto.GetTotalSumResponse{}, uc_errors.ErrInvalidDate
 		}
-		end = &t
+		endPtr = &t
 	}
 
 	/* ####################
@@ -61,15 +62,15 @@ func (uc *GetTotalSumUC) Execute(ctx context.Context, in dto.GetTotalSum) (dto.G
 	   ####################
 	*/
 	f := filter.SumFilter{
-		UserID:      &uid,
-		ServiceName: &sName,
-		StartDate:   &start,
-		EndDate:     end,
+		UserID:      uidPtr,
+		ServiceName: serviceNamePtr,
+		StartDate:   startPtr,
+		EndDate:     endPtr,
 	}
 
 	sum, err := uc.Subscriptions.GetTotalSum(ctx, f)
 	if err != nil {
-		return dto.GetTotalSumResponse{}, uc_errors.ErrGetTotalSum
+		return dto.GetTotalSumResponse{}, uc_errors.Wrap(uc_errors.ErrGetTotalSum, err)
 	}
 
 	return dto.GetTotalSumResponse{TotalSum: sum}, nil

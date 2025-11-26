@@ -30,9 +30,9 @@ func (uc *DeleteSubscriptionUC) Execute(ctx context.Context, in dto.DeleteSubscr
 	err := uc.Subscriptions.Delete(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return dto.DeleteSubscriptionResponse{Deleted: false}, uc_errors.ErrSubscriptionNotFound
+			return dto.DeleteSubscriptionResponse{Deleted: false}, uc_errors.Wrap(uc_errors.ErrSubscriptionNotFound, err)
 		}
-		return dto.DeleteSubscriptionResponse{Deleted: false}, uc_errors.ErrDeleteSubscription
+		return dto.DeleteSubscriptionResponse{Deleted: false}, uc_errors.Wrap(uc_errors.ErrDeleteSubscription, err)
 	}
 
 	return dto.DeleteSubscriptionResponse{Deleted: true}, nil

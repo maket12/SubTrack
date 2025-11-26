@@ -28,26 +28,39 @@ func (uc *GetSubscriptionListUC) Execute(ctx context.Context, in dto.GetSubscrip
 		return dto.GetSubscriptionListResponse{}, uc_errors.ErrInvalidOffset
 	}
 
+	limit := in.Limit
+	if limit == 0 {
+		limit = 10
+	}
+
 	/* ####################
 	   #	 Parsing      #
 	   ####################
 	*/
-	var f filter.ListFilter
-
-	if in.UserID != nil {
+	var uidPtr *uuid.UUID
+	if in.UserID != nil && *in.UserID != "" {
 		uid, err := uuid.Parse(*in.UserID)
 		if err != nil {
 			return dto.GetSubscriptionListResponse{}, uc_errors.ErrInvalidUserID
 		}
-		f.UserID = &uid
+		if uid == uuid.Nil {
+			return dto.GetSubscriptionListResponse{}, uc_errors.ErrInvalidUserID
+		}
+		uidPtr = &uid
 	}
 
-	if in.ServiceName != nil {
-		f.ServiceName = in.ServiceName
+	var serviceNamePtr *string
+	if in.ServiceName != nil && *in.ServiceName != "" {
+		s := *in.ServiceName
+		serviceNamePtr = &s
 	}
 
-	f.Limit = in.Limit
-	f.Offset = in.Offset
+	f := filter.ListFilter{
+		UserID:      uidPtr,
+		ServiceName: serviceNamePtr,
+		Limit:       limit,
+		Offset:      in.Offset,
+	}
 
 	/* ####################
 	   #	 Request      #
@@ -55,7 +68,7 @@ func (uc *GetSubscriptionListUC) Execute(ctx context.Context, in dto.GetSubscrip
 	*/
 	subs, err := uc.Subscriptions.GetList(ctx, f)
 	if err != nil {
-		return dto.GetSubscriptionListResponse{}, uc_errors.ErrGetSubscriptionList
+		return dto.GetSubscriptionListResponse{}, uc_errors.Wrap(uc_errors.ErrGetSubscriptionList, err)
 	}
 
 	/* ####################

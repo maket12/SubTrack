@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log/slog"
 
 	"github.com/maket12/SubTrack/internal/domain/entity"
 	"github.com/maket12/SubTrack/internal/domain/filter"
@@ -14,14 +13,12 @@ import (
 )
 
 type SubscriptionRepository struct {
-	db     *sqlx.DB
-	logger *slog.Logger
+	db *sqlx.DB
 }
 
-func NewSubscriptionRepo(db *sqlx.DB, log *slog.Logger) *SubscriptionRepository {
+func NewSubscriptionRepo(db *sqlx.DB) *SubscriptionRepository {
 	return &SubscriptionRepository{
-		db:     db,
-		logger: log,
+		db: db,
 	}
 }
 
@@ -137,46 +134,9 @@ func (r *SubscriptionRepository) Delete(ctx context.Context, id int) error {
 	return nil
 }
 
-func (r *SubscriptionRepository) GetList(ctx context.Context, filter filter.ListFilter) ([]entity.Subscription, error) {
+func (r *SubscriptionRepository) GetList(ctx context.Context, f filter.ListFilter) ([]entity.Subscription, error) {
 	query := `
 		SELECT id, service_name, price, user_id, start_date, end_date
-		FROM subscriptions
-		WHERE 1=1
-	`
-
-	var args []any
-	argNum := 1
-
-	if filter.UserID != nil {
-		query += fmt.Sprintf(" AND user_id = $%d", argNum)
-		args = append(args, *filter.UserID)
-		argNum++
-	}
-
-	if filter.ServiceName != nil {
-		query += fmt.Sprintf(" AND service_name = $%d", argNum)
-		args = append(args, *filter.ServiceName)
-		argNum++
-	}
-
-	query += fmt.Sprintf(" LIMIT $%d", argNum)
-	args = append(args, filter.Limit)
-	argNum++
-
-	query += fmt.Sprintf(" OFFSET $%d", argNum)
-	args = append(args, filter.Offset)
-
-	var subs []entity.Subscription
-	if err := r.db.SelectContext(ctx, &subs, query, args...); err != nil {
-		return nil, fmt.Errorf("failed to get list of subscriptions using db: %w", err)
-	}
-
-	return subs, nil
-}
-
-func (r *SubscriptionRepository) GetTotalSum(ctx context.Context, f filter.SumFilter) (int, error) {
-	query := `
-		SELECT SUM(price) 
 		FROM subscriptions
 		WHERE 1=1
 	`
@@ -193,6 +153,55 @@ func (r *SubscriptionRepository) GetTotalSum(ctx context.Context, f filter.SumFi
 	if f.ServiceName != nil {
 		query += fmt.Sprintf(" AND service_name = $%d", argNum)
 		args = append(args, *f.ServiceName)
+		argNum++
+	}
+
+	query += fmt.Sprintf(" LIMIT $%d", argNum)
+	args = append(args, f.Limit)
+	argNum++
+
+	query += fmt.Sprintf(" OFFSET $%d", argNum)
+	args = append(args, f.Offset)
+
+	var subs []entity.Subscription
+	if err := r.db.SelectContext(ctx, &subs, query, args...); err != nil {
+		return nil, fmt.Errorf("failed to get list of subscriptions using db: %w", err)
+	}
+
+	return subs, nil
+}
+
+func (r *SubscriptionRepository) GetTotalSum(ctx context.Context, f filter.SumFilter) (int, error) {
+	query := `
+		SELECT COALESCE(SUM(price), 0)
+		FROM subscriptions
+		WHERE 1=1
+	`
+
+	var args []any
+	argNum := 1
+
+	if f.UserID != nil {
+		query += fmt.Sprintf(" AND user_id = $%d", argNum)
+		args = append(args, *f.UserID)
+		argNum++
+	}
+
+	if f.ServiceName != nil {
+		query += fmt.Sprintf(" AND service_name = $%d", argNum)
+		args = append(args, *f.ServiceName)
+		argNum++
+	}
+
+	if f.StartDate != nil {
+		query += fmt.Sprintf(" AND start_date >= $%d", argNum)
+		args = append(args, *f.StartDate)
+		argNum++
+	}
+
+	if f.EndDate != nil {
+		query += fmt.Sprintf(" AND start_date <= $%d", argNum)
+		args = append(args, *f.EndDate)
 		argNum++
 	}
 

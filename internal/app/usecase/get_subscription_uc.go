@@ -31,9 +31,9 @@ func (uc *GetSubscriptionUC) Execute(ctx context.Context, in dto.GetSubscription
 	sub, err := uc.Subscriptions.Get(ctx, in.ID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return dto.GetSubscriptionResponse{}, uc_errors.ErrSubscriptionNotFound
+			return dto.GetSubscriptionResponse{}, uc_errors.Wrap(uc_errors.ErrSubscriptionNotFound, err)
 		}
-		return dto.GetSubscriptionResponse{}, uc_errors.ErrGetSubscription
+		return dto.GetSubscriptionResponse{}, uc_errors.Wrap(uc_errors.ErrGetSubscription, err)
 	}
 
 	/* ####################
