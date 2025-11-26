@@ -9,15 +9,15 @@ assignment.
 
 ## ✨ Features
 
--   Create, read, update and delete subscription records\
--   List subscriptions with filtering options\
--   Calculate total subscription cost over a specified period\
--   Filtering by `user_id` and `service_name`\
--   Support for subscriptions with no end date\
--   Input validation (UUID, dates, price)\
--   Swagger API documentation\
--   Structured request & error logging\
--   Configuration via `.env` / `.yaml`\
+-   Create, read, update and delete subscription records
+-   List subscriptions with filtering options
+-   Calculate total subscription cost over a specified period
+-   Filtering by `user_id` and `service_name`
+-   Support for subscriptions with no end date
+-   Input validation (UUID, dates, price)
+-   Swagger API documentation
+-   Structured request & error logging
+-   Configuration via `.env`
 -   Fully containerized using **Docker Compose**
 
 ## 🛠️ Tech Stack
@@ -32,28 +32,21 @@ assignment.
 ## 📁 Project Structure
 
     /cmd/subtrack/main.go
-    /config/config.yaml
-    /docs/              — Swagger spec
+    /docs/                  — Swagger spec
     /internal/
-        handlers/       — HTTP handlers
-        services/       — business logic
-        repository/     — database layer
-        models/
-        dto/
-        migrations/     — SQL migrations
-    /pkg/
+        adapter/
+            in/
+                http/       — HTTP handlers
+            out/
+                db/         — database layer
+        app/                — business logic
+        config/
+        domain/             — domain entities/ports
+    migrations/             — SQL migrations
     docker-compose.yml
+    Dockerfile
 
 ## 🚀 Run the Service
-
-Using Makefile:
-
-``` bash
-make up
-```
-
-Or manually:
-
 ``` bash
 docker-compose up --build
 ```
@@ -64,14 +57,14 @@ Swagger UI available at:
 
 ## 📘 API Overview
 
--   Full CRUDL for subscription entities\
+-   Full CRUDL for subscription entities
 -   Endpoint for calculating total subscription cost for a specified
-    period\
--   Filtering by user and service name\
+    period
+-   Filtering by user and service name
 -   Monthly-based cost calculation logic
 
 ## 📄 Test Assignment --- Effective Mobile
 
 This project implements a REST microservice following the requirements
-of the\
+of the
 **Effective Mobile --- Junior Golang Developer test assignment**.
