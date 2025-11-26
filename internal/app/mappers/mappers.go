@@ -1,8 +1,8 @@
 package mappers
 
 import (
-	"SubTrack/app/dto"
-	"SubTrack/domain/entity"
+	"github.com/maket12/SubTrack/internal/app/dto"
+	"github.com/maket12/SubTrack/internal/domain/entity"
 )
 
 func MapIntoGetSubscriptionDTO(sub *entity.Subscription) dto.GetSubscriptionResponse {

@@ -1,15 +1,17 @@
 package main
 
 import (
+	"github.com/maket12/SubTrack/internal/adapter/in/http"
+	adapterdb "github.com/maket12/SubTrack/internal/adapter/out/db"
+	"github.com/maket12/SubTrack/internal/app/usecase"
+
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	adapterdb "SubTrack/adapter/db"
-	"SubTrack/app/usecase"
-	_ "SubTrack/docs"
-	"SubTrack/presentation/rest"
 	"log/slog"
 	"os"
+
+	_ "github.com/maket12/SubTrack/docs"
 )
 
 func parseLogLevel(level string) slog.Level {
@@ -73,7 +75,7 @@ func main() {
 	// ======================
 	// 5. Handlers (REST)
 	// ======================
-	subHandler := rest.NewSubscriptionHandler(
+	subHandler := http.NewSubscriptionHandler(
 		createUC,
 		getUC,
 		updateUC,
@@ -85,7 +87,7 @@ func main() {
 	// ======================
 	// 6. Router
 	// ======================
-	router := rest.NewRouter(subHandler).InitRoutes()
+	router := http.NewRouter(subHandler).InitRoutes()
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// ======================

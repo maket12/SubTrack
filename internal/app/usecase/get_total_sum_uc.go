@@ -1,18 +1,19 @@
 package usecase
 
 import (
-	"SubTrack/app/dto"
-	"SubTrack/app/uc_errors"
-	"SubTrack/domain/filter"
-	"SubTrack/domain/port"
 	"context"
 	"time"
+
+	"github.com/maket12/SubTrack/internal/app/dto"
+	"github.com/maket12/SubTrack/internal/app/uc_errors"
+	"github.com/maket12/SubTrack/internal/domain/filter"
+	"github.com/maket12/SubTrack/internal/domain/port"
 
 	"github.com/google/uuid"
 )
 
 type GetTotalSumUC struct {
-	Subscriptions port.SubscriptionRepo
+	Subscriptions port.SubscriptionRepository
 }
 
 func (uc *GetTotalSumUC) Execute(ctx context.Context, in dto.GetTotalSum) (dto.GetTotalSumResponse, error) {

@@ -1,9 +1,10 @@
-package rest
+package http
 
 import (
-	"SubTrack/app/uc_errors"
 	"errors"
 	"net/http"
+
+	"github.com/maket12/SubTrack/internal/app/uc_errors"
 )
 
 func HttpError(err error) (int, string) {

@@ -1,4 +1,4 @@
-module SubTrack
+module github.com/maket12/SubTrack
 
 go 1.24
 

@@ -1,15 +1,17 @@
 package usecase
 
 import (
-	"SubTrack/app/dto"
-	"SubTrack/app/uc_errors"
-	"SubTrack/domain/port"
 	"context"
+	"database/sql"
 	"errors"
+
+	"github.com/maket12/SubTrack/internal/app/dto"
+	"github.com/maket12/SubTrack/internal/app/uc_errors"
+	"github.com/maket12/SubTrack/internal/domain/port"
 )
 
 type DeleteSubscriptionUC struct {
-	Subscriptions port.SubscriptionRepo
+	Subscriptions port.SubscriptionRepository
 }
 
 func (uc *DeleteSubscriptionUC) Execute(ctx context.Context, in dto.DeleteSubscription) (dto.DeleteSubscriptionResponse, error) {
@@ -25,9 +27,9 @@ func (uc *DeleteSubscriptionUC) Execute(ctx context.Context, in dto.DeleteSubscr
 	   #	 Request      #
 	   ####################
 	*/
-	err := uc.Subscriptions.DeleteSubscription(ctx, in.ID)
+	err := uc.Subscriptions.Delete(ctx, in.ID)
 	if err != nil {
-		if errors.Is(err, port.ErrSubscriptionNotFound) {
+		if errors.Is(err, sql.ErrNoRows) {
 			return dto.DeleteSubscriptionResponse{Deleted: false}, uc_errors.ErrSubscriptionNotFound
 		}
 		return dto.DeleteSubscriptionResponse{Deleted: false}, uc_errors.ErrDeleteSubscription

@@ -1,16 +1,18 @@
 package usecase
 
 import (
-	"SubTrack/app/dto"
-	"SubTrack/app/mappers"
-	"SubTrack/app/uc_errors"
-	"SubTrack/domain/port"
 	"context"
+	"database/sql"
 	"errors"
+
+	"github.com/maket12/SubTrack/internal/app/dto"
+	"github.com/maket12/SubTrack/internal/app/mappers"
+	"github.com/maket12/SubTrack/internal/app/uc_errors"
+	"github.com/maket12/SubTrack/internal/domain/port"
 )
 
 type GetSubscriptionUC struct {
-	Subscriptions port.SubscriptionRepo
+	Subscriptions port.SubscriptionRepository
 }
 
 func (uc *GetSubscriptionUC) Execute(ctx context.Context, in dto.GetSubscription) (dto.GetSubscriptionResponse, error) {
@@ -26,9 +28,9 @@ func (uc *GetSubscriptionUC) Execute(ctx context.Context, in dto.GetSubscription
 	   #	 Request      #
 	   ####################
 	*/
-	sub, err := uc.Subscriptions.GetSubscription(ctx, in.ID)
+	sub, err := uc.Subscriptions.Get(ctx, in.ID)
 	if err != nil {
-		if errors.Is(err, port.ErrSubscriptionNotFound) {
+		if errors.Is(err, sql.ErrNoRows) {
 			return dto.GetSubscriptionResponse{}, uc_errors.ErrSubscriptionNotFound
 		}
 		return dto.GetSubscriptionResponse{}, uc_errors.ErrGetSubscription

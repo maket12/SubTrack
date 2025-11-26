@@ -1,19 +1,21 @@
 package usecase
 
 import (
-	"SubTrack/app/dto"
-	"SubTrack/app/uc_errors"
-	"SubTrack/domain/entity"
-	"SubTrack/domain/port"
 	"context"
+	"database/sql"
 	"errors"
 	"time"
+
+	"github.com/maket12/SubTrack/internal/app/dto"
+	"github.com/maket12/SubTrack/internal/app/uc_errors"
+	"github.com/maket12/SubTrack/internal/domain/entity"
+	"github.com/maket12/SubTrack/internal/domain/port"
 
 	"github.com/google/uuid"
 )
 
 type UpdateSubscriptionUC struct {
-	Subscriptions port.SubscriptionRepo
+	Subscriptions port.SubscriptionRepository
 }
 
 func (uc *UpdateSubscriptionUC) Execute(ctx context.Context, in dto.UpdateSubscription) (dto.UpdateSubscriptionResponse, error) {
@@ -67,9 +69,9 @@ func (uc *UpdateSubscriptionUC) Execute(ctx context.Context, in dto.UpdateSubscr
 		EndDate:     end,
 	}
 
-	err = uc.Subscriptions.UpdateSubscription(ctx, sub)
+	err = uc.Subscriptions.Update(ctx, sub)
 	if err != nil {
-		if errors.Is(err, port.ErrSubscriptionNotFound) {
+		if errors.Is(err, sql.ErrNoRows) {
 			return dto.UpdateSubscriptionResponse{Updated: false}, uc_errors.ErrSubscriptionNotFound
 		}
 		return dto.UpdateSubscriptionResponse{Updated: false}, uc_errors.ErrUpdateSubscription

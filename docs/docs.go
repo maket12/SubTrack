@@ -88,7 +88,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateSubscription"
+                            "$ref": "#/definitions/dto.Create"
                         }
                     }
                 ],
@@ -247,7 +247,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateSubscription"
+                            "$ref": "#/definitions/dto.Update"
                         }
                     }
                 ],
@@ -326,7 +326,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.CreateSubscription": {
+        "dto.Create": {
             "type": "object",
             "properties": {
                 "end_date": {
@@ -404,7 +404,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UpdateSubscription": {
+        "dto.Update": {
             "type": "object",
             "properties": {
                 "end_date": {

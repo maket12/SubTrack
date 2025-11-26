@@ -1,10 +1,11 @@
-package rest
+package http
 
 import (
-	"SubTrack/app/dto"
-	"SubTrack/app/usecase"
 	"net/http"
 	"strconv"
+
+	"github.com/maket12/SubTrack/internal/app/dto"
+	"github.com/maket12/SubTrack/internal/app/usecase"
 
 	"github.com/gin-gonic/gin"
 )

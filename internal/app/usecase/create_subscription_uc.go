@@ -1,18 +1,19 @@
 package usecase
 
 import (
-	"SubTrack/app/dto"
-	"SubTrack/app/uc_errors"
-	"SubTrack/domain/entity"
-	"SubTrack/domain/port"
 	"context"
 	"time"
+
+	"github.com/maket12/SubTrack/internal/app/dto"
+	"github.com/maket12/SubTrack/internal/app/uc_errors"
+	"github.com/maket12/SubTrack/internal/domain/entity"
+	"github.com/maket12/SubTrack/internal/domain/port"
 
 	"github.com/google/uuid"
 )
 
 type CreateSubscriptionUC struct {
-	Subscriptions port.SubscriptionRepo
+	Subscriptions port.SubscriptionRepository
 }
 
 func (uc *CreateSubscriptionUC) Execute(ctx context.Context, in dto.CreateSubscription) (dto.CreateSubscriptionResponse, error) {
@@ -62,7 +63,7 @@ func (uc *CreateSubscriptionUC) Execute(ctx context.Context, in dto.CreateSubscr
 		EndDate:     end,
 	}
 
-	if err := uc.Subscriptions.CreateSubscription(ctx, sub); err != nil {
+	if err := uc.Subscriptions.Create(ctx, sub); err != nil {
 		return dto.CreateSubscriptionResponse{}, uc_errors.ErrCreateSubscription
 	}
 

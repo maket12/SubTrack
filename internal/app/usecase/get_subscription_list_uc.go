@@ -1,18 +1,19 @@
 package usecase
 
 import (
-	"SubTrack/app/dto"
-	"SubTrack/app/mappers"
-	"SubTrack/app/uc_errors"
-	"SubTrack/domain/filter"
-	"SubTrack/domain/port"
 	"context"
+
+	"github.com/maket12/SubTrack/internal/app/dto"
+	"github.com/maket12/SubTrack/internal/app/mappers"
+	"github.com/maket12/SubTrack/internal/app/uc_errors"
+	"github.com/maket12/SubTrack/internal/domain/filter"
+	"github.com/maket12/SubTrack/internal/domain/port"
 
 	"github.com/google/uuid"
 )
 
 type GetSubscriptionListUC struct {
-	Subscriptions port.SubscriptionRepo
+	Subscriptions port.SubscriptionRepository
 }
 
 func (uc *GetSubscriptionListUC) Execute(ctx context.Context, in dto.GetSubscriptionList) (dto.GetSubscriptionListResponse, error) {
@@ -52,7 +53,7 @@ func (uc *GetSubscriptionListUC) Execute(ctx context.Context, in dto.GetSubscrip
 	   #	 Request      #
 	   ####################
 	*/
-	subs, err := uc.Subscriptions.GetSubscriptionList(ctx, f)
+	subs, err := uc.Subscriptions.GetList(ctx, f)
 	if err != nil {
 		return dto.GetSubscriptionListResponse{}, uc_errors.ErrGetSubscriptionList
 	}

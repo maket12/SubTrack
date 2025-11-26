@@ -16,7 +16,7 @@ WORKDIR /app
 
 RUN apk --no-cache add ca-certificates
 
-COPY --from=builder /app/subtrack .
+COPY --from=builder /internal/app/subtrack .
 
 COPY migrations ./migrations
 
