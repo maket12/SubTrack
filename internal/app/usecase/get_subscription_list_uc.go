@@ -1,0 +1,79 @@
+package usecase
+
+import (
+	"context"
+
+	"github.com/maket12/SubTrack/internal/app/dto"
+	"github.com/maket12/SubTrack/internal/app/mappers"
+	"github.com/maket12/SubTrack/internal/app/uc_errors"
+	"github.com/maket12/SubTrack/internal/domain/filter"
+	"github.com/maket12/SubTrack/internal/domain/port"
+
+	"github.com/google/uuid"
+)
+
+type GetSubscriptionListUC struct {
+	Subscriptions port.SubscriptionRepository
+}
+
+func (uc *GetSubscriptionListUC) Execute(ctx context.Context, in dto.GetSubscriptionList) (dto.GetSubscriptionListResponse, error) {
+	/* ####################
+	   #	Validation    #
+	   ####################
+	*/
+	if in.Limit < 0 {
+		return dto.GetSubscriptionListResponse{}, uc_errors.ErrInvalidLimit
+	}
+	if in.Offset < 0 {
+		return dto.GetSubscriptionListResponse{}, uc_errors.ErrInvalidOffset
+	}
+
+	limit := in.Limit
+	if limit == 0 {
+		limit = 10
+	}
+
+	/* ####################
+	   #	 Parsing      #
+	   ####################
+	*/
+	var uidPtr *uuid.UUID
+	if in.UserID != nil && *in.UserID != "" {
+		uid, err := uuid.Parse(*in.UserID)
+		if err != nil {
+			return dto.GetSubscriptionListResponse{}, uc_errors.ErrInvalidUserID
+		}
+		if uid == uuid.Nil {
+			return dto.GetSubscriptionListResponse{}, uc_errors.ErrInvalidUserID
+		}
+		uidPtr = &uid
+	}
+
+	var serviceNamePtr *string
+	if in.ServiceName != nil && *in.ServiceName != "" {
+		s := *in.ServiceName
+		serviceNamePtr = &s
+	}
+
+	f := filter.ListFilter{
+		UserID:      uidPtr,
+		ServiceName: serviceNamePtr,
+		Limit:       limit,
+		Offset:      in.Offset,
+	}
+
+	/* ####################
+	   #	 Request      #
+	   ####################
+	*/
+	subs, err := uc.Subscriptions.GetList(ctx, f)
+	if err != nil {
+		return dto.GetSubscriptionListResponse{}, uc_errors.Wrap(uc_errors.ErrGetSubscriptionList, err)
+	}
+
+	/* ####################
+	   #	 Mapping      #
+	   ####################
+	*/
+	return mappers.MapIntoGetSubscriptionListDTO(subs), nil
+}

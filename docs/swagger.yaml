@@ -1,0 +1,288 @@
+swagger: "2.0"
+info:
+  title: "Subscriptions API"
+  description: "API for managing subscriptions"
+  version: "1.0.0"
+
+basePath: "/"
+schemes:
+  - "http"
+  - "https"
+
+paths:
+  /subscriptions:
+    post:
+      tags:
+        - "Create"
+      summary: "Create subscription"
+      description: "Creates a new user subscription"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "input"
+          required: true
+          description: "Subscription data"
+          schema:
+            $ref: "#/definitions/CreateSubscription"
+      responses:
+        201:
+          description: "Created"
+          schema:
+            $ref: "#/definitions/CreateSubscriptionResponse"
+        400:
+          description: "Bad Request"
+        500:
+          description: "Internal Server Error"
+
+    get:
+      tags:
+        - "List"
+      summary: "List subscriptions"
+      description: "Returns paginated list of subscriptions"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "user_id"
+          in: "query"
+          description: "User ID (UUID)"
+          type: "string"
+        - name: "service_name"
+          in: "query"
+          description: "Service name"
+          type: "string"
+        - name: "limit"
+          in: "query"
+          description: "Limit (default 10)"
+          type: "integer"
+        - name: "offset"
+          in: "query"
+          description: "Offset"
+          type: "integer"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/GetSubscriptionListResponse"
+        400:
+          description: "Bad Request"
+
+  /subscriptions/{id}:
+    get:
+      tags:
+        - "Get"
+      summary: "Get subscription by ID"
+      description: "Returns a single subscription by ID"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "Subscription ID"
+          type: "integer"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/GetSubscriptionResponse"
+        400:
+          description: "Bad Request"
+        404:
+          description: "Not Found"
+
+    put:
+      tags:
+        - "Update"
+      summary: "Update subscription"
+      description: "Updates subscription by ID"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+          description: "Subscription ID"
+        - in: "body"
+          name: "input"
+          required: true
+          description: "Subscription update data"
+          schema:
+            $ref: "#/definitions/UpdateSubscription"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/UpdateSubscriptionResponse"
+        400:
+          description: "Bad Request"
+        404:
+          description: "Not Found"
+
+    delete:
+      tags:
+        - "Delete"
+      summary: "Delete subscription"
+      description: "Deletes subscription by ID"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          type: "integer"
+          description: "Subscription ID"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/DeleteSubscriptionResponse"
+        400:
+          description: "Bad Request"
+        404:
+          description: "Not Found"
+
+  /subscriptions/total:
+    get:
+      tags:
+        - "Total"
+      summary: "Get total subscription cost"
+      description: "Calculates total sum of subscriptions for given filters"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "user_id"
+          in: "query"
+          description: "User ID (UUID)"
+          type: "string"
+        - name: "service_name"
+          in: "query"
+          description: "Service name"
+          type: "string"
+        - name: "start_date"
+          in: "query"
+          description: "Start date (DD-MM-YYYY)"
+          type: "string"
+        - name: "end_date"
+          in: "query"
+          description: "End date (DD-MM-YYYY)"
+          type: "string"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/GetTotalSumResponse"
+        400:
+          description: "Bad Request"
+
+definitions:
+
+  CreateSubscription:
+    type: "object"
+    description: "Create subscription request"
+    properties:
+      service_name:
+        description: "Subscription service name"
+        type: "string"
+      price:
+        description: "Monthly price"
+        type: "integer"
+      user_id:
+        description: "User ID (UUID)"
+        type: "string"
+      start_date:
+        description: "Start date (DD-MM-YYYY)"
+        type: "string"
+      end_date:
+        description: "End date (DD-MM-YYYY), optional"
+        type: "string"
+
+  CreateSubscriptionResponse:
+    type: "object"
+    description: "Response for subscription creation"
+    properties:
+      id:
+        description: "Created subscription ID"
+        type: "integer"
+
+  UpdateSubscription:
+    type: "object"
+    description: "Update subscription request"
+    properties:
+      service_name:
+        description: "Subscription service name"
+        type: "string"
+      price:
+        description: "Monthly price"
+        type: "integer"
+      user_id:
+        description: "User ID (UUID)"
+        type: "string"
+      start_date:
+        description: "Start date (DD-MM-YYYY)"
+        type: "string"
+      end_date:
+        description: "End date (DD-MM-YYYY)"
+        type: "string"
+
+  UpdateSubscriptionResponse:
+    type: "object"
+    description: "Response for updating subscription"
+    properties:
+      updated:
+        description: "Whether subscription was updated"
+        type: "boolean"
+
+  GetSubscriptionResponse:
+    type: "object"
+    description: "Subscription details"
+    properties:
+      id:
+        description: "Subscription ID"
+        type: "integer"
+      service_name:
+        description: "Subscription service name"
+        type: "string"
+      price:
+        description: "Monthly price"
+        type: "integer"
+      user_id:
+        description: "User ID (UUID)"
+        type: "string"
+      start_date:
+        description: "Start date (DD-MM-YYYY)"
+        type: "string"
+      end_date:
+        description: "End date (optional)"
+        type: "string"
+
+  GetSubscriptionListResponse:
+    type: "object"
+    description: "List of subscriptions"
+    properties:
+      items:
+        description: "List of subscription items"
+        type: "array"
+        items:
+          $ref: "#/definitions/GetSubscriptionResponse"
+
+  DeleteSubscriptionResponse:
+    type: "object"
+    description: "Response for subscription deletion"
+    properties:
+      deleted:
+        description: "Whether subscription was deleted"
+        type: "boolean"
+
+  GetTotalSumResponse:
+    type: "object"
+    description: "Total sum of selected subscriptions"
+    properties:
+      total_sum:
+        description: "Total sum of all matched subscriptions"
+        type: "integer"
