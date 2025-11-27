@@ -1,9 +1,9 @@
 # 📦 Subtrack --- Online Subscription Tracking Service
 
 **Subtrack** is a REST service designed to aggregate and manage user
-online subscriptions.\
+online subscriptions.
 It provides full CRUDL operations and calculates the total cost of
-subscriptions for any selected period.\
+subscriptions for any selected period.
 This project was implemented as part of the Junior Golang Developer test
 assignment.
 
