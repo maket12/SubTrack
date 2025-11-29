@@ -52,7 +52,7 @@ func main() {
 	// ======================
 	db, err := adapterdb.NewPostgres(cfg.DatabaseDSN)
 	if err != nil {
-		logger.Error("failed to connect db: %v", err)
+		logger.Error("failed to connect db", slog.Any("err", err))
 		os.Exit(1)
 	}
 
@@ -98,9 +98,9 @@ func main() {
 	// ======================
 	// 8. Run HTTP server
 	// ======================
-	logger.Info("starting server on %s\n", cfg.HTTPAddress)
+	logger.Info("starting server", slog.String("address", cfg.HTTPAddress))
 	if err := router.Run(cfg.HTTPAddress); err != nil {
-		logger.Error("failed to run HTTP server: %v", err)
+		logger.Error("failed to run HTTP server", slog.Any("err", err))
 		os.Exit(1)
 	}
 }

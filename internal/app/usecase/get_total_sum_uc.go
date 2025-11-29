@@ -22,8 +22,8 @@ func (uc *GetTotalSumUC) Execute(ctx context.Context, in dto.GetTotalSum) (dto.G
 	   ####################
 	*/
 	var uidPtr *uuid.UUID
-	if in.UserID != "" {
-		uid, err := uuid.Parse(in.UserID)
+	if in.UserID != nil {
+		uid, err := uuid.Parse(*in.UserID)
 		if err != nil {
 			return dto.GetTotalSumResponse{}, uc_errors.ErrInvalidUserID
 		}
@@ -40,8 +40,8 @@ func (uc *GetTotalSumUC) Execute(ctx context.Context, in dto.GetTotalSum) (dto.G
 	}
 
 	var startPtr *time.Time
-	if in.StartDate != "" {
-		start, err := time.Parse("02-01-2006", in.StartDate)
+	if in.StartDate != nil {
+		start, err := time.Parse("02-01-2006", *in.StartDate)
 		if err != nil {
 			return dto.GetTotalSumResponse{}, uc_errors.ErrInvalidDate
 		}

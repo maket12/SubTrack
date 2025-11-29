@@ -19,7 +19,7 @@ func (uc *DeleteSubscriptionUC) Execute(ctx context.Context, in dto.DeleteSubscr
 	   #	Validation    #
 	   ####################
 	*/
-	if in.ID == 0 {
+	if in.ID <= 0 {
 		return dto.DeleteSubscriptionResponse{Deleted: false}, uc_errors.ErrInvalidSubscriptionID
 	}
 
