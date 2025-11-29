@@ -22,7 +22,7 @@ func NewSubscriptionRepo(db *sqlx.DB) *SubscriptionRepository {
 	}
 }
 
-func (r *SubscriptionRepository) Create(ctx context.Context, s *entity.Subscription) error {
+func (r *SubscriptionRepository) Create(ctx context.Context, s *entity.Subscription) (int, error) {
 	query := `
 		INSERT INTO subscriptions
 			(service_name, price, user_id, start_date, end_date)
@@ -43,12 +43,10 @@ func (r *SubscriptionRepository) Create(ctx context.Context, s *entity.Subscript
 	).Scan(&id)
 
 	if err != nil {
-		return fmt.Errorf("failed to create subscription using db: %w", err)
+		return 0, fmt.Errorf("failed to create subscription using db: %w", err)
 	}
 
-	s.ID = id
-
-	return nil
+	return id, nil
 }
 
 func (r *SubscriptionRepository) Get(ctx context.Context, id int) (*entity.Subscription, error) {
@@ -202,7 +200,6 @@ func (r *SubscriptionRepository) GetTotalSum(ctx context.Context, f filter.SumFi
 	if f.EndDate != nil {
 		query += fmt.Sprintf(" AND start_date <= $%d", argNum)
 		args = append(args, *f.EndDate)
-		argNum++
 	}
 
 	var sum int

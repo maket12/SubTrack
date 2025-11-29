@@ -20,7 +20,7 @@ func (uc *GetSubscriptionUC) Execute(ctx context.Context, in dto.GetSubscription
 	   #	Validation    #
 	   ####################
 	*/
-	if in.ID == 0 {
+	if in.ID <= 0 {
 		return dto.GetSubscriptionResponse{}, uc_errors.ErrInvalidSubscriptionID
 	}
 

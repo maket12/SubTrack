@@ -8,7 +8,7 @@ import (
 )
 
 type SubscriptionRepository interface {
-	Create(ctx context.Context, s *entity.Subscription) error
+	Create(ctx context.Context, s *entity.Subscription) (int, error)
 	Get(ctx context.Context, id int) (*entity.Subscription, error)
 	Update(ctx context.Context, s *entity.Subscription) error
 	Delete(ctx context.Context, id int) error
