@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/maket12/SubTrack/internal/domain/entity"
 	"github.com/maket12/SubTrack/internal/domain/filter"
@@ -133,33 +134,30 @@ func (r *SubscriptionRepository) Delete(ctx context.Context, id int) error {
 }
 
 func (r *SubscriptionRepository) GetList(ctx context.Context, f filter.ListFilter) ([]entity.Subscription, error) {
-	query := `
-		SELECT id, service_name, price, user_id, start_date, end_date
-		FROM subscriptions
-		WHERE 1=1
-	`
-
+	var where []string
 	var args []any
-	argNum := 1
 
 	if f.UserID != nil {
-		query += fmt.Sprintf(" AND user_id = $%d", argNum)
+		where = append(where, fmt.Sprintf("user_id = $%d", len(args)+1))
 		args = append(args, *f.UserID)
-		argNum++
 	}
 
 	if f.ServiceName != nil {
-		query += fmt.Sprintf(" AND service_name = $%d", argNum)
+		where = append(where, fmt.Sprintf("service_name = $%d", len(args)+1))
 		args = append(args, *f.ServiceName)
-		argNum++
 	}
 
-	query += fmt.Sprintf(" LIMIT $%d", argNum)
-	args = append(args, f.Limit)
-	argNum++
+	query := `
+		SELECT id, service_name, price, user_id, start_date, end_date
+		FROM subscriptions
+	`
 
-	query += fmt.Sprintf(" OFFSET $%d", argNum)
-	args = append(args, f.Offset)
+	if len(where) > 0 {
+		query += " WHERE " + strings.Join(where, " AND ")
+	}
+
+	query += fmt.Sprintf(" LIMIT $%d OFFSET $%d", len(args)+1, len(args)+2)
+	args = append(args, f.Limit, f.Offset)
 
 	var subs []entity.Subscription
 	if err := r.db.SelectContext(ctx, &subs, query, args...); err != nil {
